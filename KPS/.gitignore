@@ -1,0 +1,16 @@
+__pycache__
+x64
+Win32
+.vs
+Debug
+Release
+*.bin
+*.dll
+*.csv
+KPS.sdf
+octave-workspace
+*.o
+*.pdb
+*.exp
+*.lib
+*.opensdf
