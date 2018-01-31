@@ -12,9 +12,10 @@ clear u
 clear y
 close all
 x(:,1) = zeros(n,1);
-u(:,1) = zeros(2,1);
+u(:,1) = zeros(1,1);
 y(:,1) = zeros(3,1);
-count=0;
+count=1;
+step=0;
 counter1a=0;
 counter2a=0;
 counter3a=0;
@@ -27,12 +28,13 @@ max_s_angle = pi/6;
 x_0 = 100;
 y_0 = 100;
 theta_0 = 2*pi*rand() - pi;
-theta = theta_0;
+theta = theta_0; % theoretical angle orientation
+theta_tot = theta_0; % spoofed angle orientation
 x_pos = x_0;
 y_pos = y_0;
 x_att = x_0;
 y_att = y_0;
-v = 10;
+v = 4; % speed of robot
 
 %create a triangle to represent my robot
 robot(:,1) = [0 2 1]';
@@ -74,168 +76,163 @@ eta = 10; % parameters to speed up convergence, i.e., remove attack faster and m
 attack=3; %attack bias value
 
 %% Begin Simulation
-for i=0:Ts:100
-   count=count+1;
-   %count2= count2+1;
-   
-   %the location of the robot:
-   A_T_B = [cos(theta) -sin(theta) x_pos; sin(theta) cos(theta) y_pos; 0 0 1];
-   robot_pose=A_T_B*robot;
-   A_T_Batt = [cos(theta_tot) -sin(theta_tot) x_att; sin(theta_tot) cos(theta_tot) y_att; 0 0 1];
-   robot_pose_att=A_T_Batt*robot;
-    path(1,count) = x_pos;
-    path(2,count) = y_pos;
-    path_att(1,count) = x_att;
-    path_att(2,count) = y_att;
-            
-    %% predict
-   x(:,count)=A*x(:,count-1) + B*u(:,count-1);
-   y(:,count)=C*x(:,count-1);
-   %if count2 ==10
-   %    k=k+1;
-   %rv(k)=0.2*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
-   
-   %count2=0;
-   %end
-   y(1,count)=y(1,count)+0.2*randn; % measurement 1 + noise
-      y(2,count)=y(2,count)+0.2*randn; % measurement 2 + noise 
-         y(3,count)=y(3,count)+0.2*randn; % measurement 3 + noise
-  
-   theta = (y(1,count)+y(2,count)+y(3,count))/3; %angle robot should be at
+for j=1:3
+    for i=0:Ts:100
+       count=count+1;
+       step = step+1;
+       %count2= count2+1;
+       %the location of the robot (for plotting):
+       A_T_B = [cos(theta) -sin(theta) x_pos; sin(theta) cos(theta) y_pos; 0 0 1];
+       robot_pose=A_T_B*robot;
+       A_T_Batt = [cos(theta_tot) -sin(theta_tot) x_att; sin(theta_tot) cos(theta_tot) y_att; 0 0 1];
+       robot_pose_att=A_T_Batt*robot;
+        path(1,step) = x_pos;
+        path(2,step) = y_pos;
+        path_att(1,step) = x_att;
+        path_att(2,step) = y_att;
 
-%    if(x(:,count)>5)
-%       klkl 
-%   end
-%% Constant attack inserted at i>30
-   if i>30
-  
-       y(3,count)=y(3,count)+attack;
-       %y(1,count)=y(1,count)+attack;
-       %y(2,count)=y(2,count)+attack;
+        %% predict
+       x(:,count)=A*x(:,count-1) + B*u(:,count-1); %x = [theta; theta_dot]?
+       y(:,count)=C*x(:,count-1); %y = 3 sensor values?
+       %if count2 ==10
+       %    k=k+1;
+       %rv(k)=0.2*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
+
+       %count2=0;
+       %end
+       y(1,count)=y(1,count)+0.2*randn; % sensor measurement 1 + noise
+          y(2,count)=y(2,count)+0.2*randn; % sensor measurement 2 + noise 
+             y(3,count)=y(3,count)+0.2*randn; % sensor measurement 3 + noise
        
-   end
-   sig = sig + sig_u;
-   theta_tot = (y(1,count)+y(2,count)+y(3,count))/3; %angle robot actually is at
+       theta = (y(1,count)+y(2,count)+y(3,count))/3; % average measurements to get angle robot should be at
    
-    %% shield
-if shield==1    
-    if (abs(y(1,count)-mu)/measurement_sig1)>1
-        
-        d1=d1+eta*(abs(y(1,count)-mu)/measurement_sig1 - 1);
-        measurement_sig1 = measurement_sig1 + d1;    
-        counter1a=counter1a+1;
-    else
-        
-        d1 = d1;
-        measurement_sig1 = measurement_sig1;
-        
+    %    if(x(:,count)>5)
+    %       klkl 
+    %   end
+    %% Constant attack inserted at i>10
+       if i>10
+
+           y(3,count)=y(3,count)+attack;
+
+       end
+       sig = sig + sig_u; %not sure what this is for
+       theta_tot = (y(1,count)+y(2,count)+y(3,count))/3; % average w/ attacked measurement to get angle robot actually is at
+
+        %% shield
+    if shield==1    
+        if (abs(y(1,count)-mu)/measurement_sig1)>1
+
+            d1=d1+eta*(abs(y(1,count)-mu)/measurement_sig1 - 1);
+            measurement_sig1 = measurement_sig1 + d1;    
+            counter1a=counter1a+1;
+        else
+
+            d1 = d1;
+            measurement_sig1 = measurement_sig1;
+
+        end
+
+        if (abs(y(1,count)-mu)/measurement_sig10) <= 1
+
+            measurement_sig1 = measurement_sig10;
+            d1=0;
+            counter1ok=counter1ok+1;
+        end
+
+
+        if (abs(y(2,count)-mu)/measurement_sig2)>1
+
+            d2=d2+eta*(abs(y(2,count)-mu)/measurement_sig2 - 1);
+            measurement_sig2 = measurement_sig2 + d2;    
+            counter2a=counter2a+1;
+        else
+
+            d2 = d2;
+            measurement_sig2 = measurement_sig2;
+
+        end
+
+        if (abs(y(2,count)-mu)/measurement_sig20) <= 1
+
+            measurement_sig2 = measurement_sig20;
+            d2=0;
+            counter2ok=counter2ok+1;
+        end
+
+
+        if (abs(y(3,count)-mu)/measurement_sig3)>1
+
+            d3=d3+eta*(abs(y(3,count)-mu)/measurement_sig3 - 1);
+            measurement_sig3 = measurement_sig3 + d3;    
+            counter3a=counter3a+1;
+        else
+
+            d3 = d3;
+            measurement_sig3 = measurement_sig3;
+
+        end
+
+        if (abs(y(3,count)-mu)/measurement_sig30) <= 1
+
+            measurement_sig3 = measurement_sig30;
+            d3=0;
+            counter3ok=counter3ok+1;
+        end
+
     end
-    
-    if (abs(y(1,count)-mu)/measurement_sig10) <= 1
-        
-        measurement_sig1 = measurement_sig10;
-        d1=0;
-        counter1ok=counter1ok+1;
-    end
-    
-    
-    if (abs(y(2,count)-mu)/measurement_sig2)>1
-        
-        d2=d2+eta*(abs(y(2,count)-mu)/measurement_sig2 - 1);
-        measurement_sig2 = measurement_sig2 + d2;    
-        counter2a=counter2a+1;
-    else
-        
-        d2 = d2;
-        measurement_sig2 = measurement_sig2;
-        
-    end
-    
-    if (abs(y(2,count)-mu)/measurement_sig20) <= 1
-        
-        measurement_sig2 = measurement_sig20;
-        d2=0;
-        counter2ok=counter2ok+1;
-    end
-    
-    
-    if (abs(y(3,count)-mu)/measurement_sig3)>1
-        
-        d3=d3+eta*(abs(y(3,count)-mu)/measurement_sig3 - 1);
-        measurement_sig3 = measurement_sig3 + d3;    
-        counter3a=counter3a+1;
-    else
-        
-        d3 = d3;
-        measurement_sig3 = measurement_sig3;
-        
-    end
-    
-    if (abs(y(3,count)-mu)/measurement_sig30) <= 1
-        
-        measurement_sig3 = measurement_sig30;
-        d3=0;
-        counter3ok=counter3ok+1;
-    end
-    
+
+       estimate(count) = theta_tot; %used to be: estimate(count) = x(1,count)
+      %% Cruise Control using PI controller
+      % mantain speed v=10
+    %  r(count)= 10;
+
+     % error(count) = r(count) - estimate(count);
+      %integral(count) = integral(count-1) + error(count)*Ts;
+      %u(1, count) = Kp*error(count) + Ki*integral(count); 
+      %if u(1,count)>36;
+       %   u(1,count)=36;
+     % end
+     % u(2,count) = u(1,count);
+
+       move_step = v * dt;
+       r(count) = atan2(goal_point(2,j)-y_pos,goal_point(1,j)-x_pos); % angle you should be at
+       error(count) = r(count) - estimate(count); % error in angle
+       u(1, count) = Kp * atan2(sin(error(count)),cos(error(count)))*0.1;
+       %max steering angle
+       if u(1,count) > max_s_angle
+           u(1,count) = max_s_angle;
+       elseif u(1,count) < -max_s_angle
+           u(1,count) = -max_s_angle;
+       end  
+
+       %u(2,count) = u(1,count);
+
+       %% update
+        [mu, sig] = updatef4(x(1,count), sig, y(1,count), measurement_sig1, y(2,count), measurement_sig2, y(3,count), measurement_sig3);
+        x(1,count-1)=mu;
+
+        %calculate the new value of x and y
+        x_pos = x_pos + move_step*cos(theta+u(1,count));
+        y_pos = y_pos + move_step*sin(theta+u(1,count));
+        x_att = x_att + move_step*cos(theta_tot+u(1,count));
+        y_att = y_att + move_step*sin(theta_tot+u(1,count));
+
+        %plot the result:
+        plot(x_0,y_0,'o');
+        axis([0 200 0 200]);
+        hold on;
+        plot(goal_point(1,1),goal_point(2,1),'p');
+        plot(goal_point(1,2),goal_point(2,2),'s');
+        plot(goal_point(1,3),goal_point(2,3),'d');
+        legend('start point','goal point1','goal point2','goal point3');
+        plot(path(1,1:step),path(2,1:step),'r');
+        plot(path_att(1,1:step),path_att(2,1:step),'g');
+
+        title({['x=',num2str(x_pos),'y=',num2str(y_pos)];...
+            ['steering angle=',num2str(u(1,count)*180/pi),'speed=',num2str(v)]});
+        fill([robot_pose(1,:)],[robot_pose(2,:)],'r');
+        fill([robot_pose_att(1,:)],[robot_pose_att(2,:)],'g');
+        hold off;
+        pause(0.1);
+    end 
 end
-
-   estimate(count) = x(1,count);%mu;
-
-  %% Cruise Control using PI controller
-  % mantain speed v=10
-%  r(count)= 10;
-  
- % error(count) = r(count) - estimate(count);
-  %integral(count) = integral(count-1) + error(count)*Ts;
-  %u(1, count) = Kp*error(count) + Ki*integral(count); 
-  %if u(1,count)>36;
-   %   u(1,count)=36;
- % end
- % u(2,count) = u(1,count);
- 
-   %use v_record to store the speed data
-   v_record(step) = v;
-   move_step = v * dt;
-   r(count) = atan2(goal_point(2,i)-y_pos,goal_point(1,i)-x_pos);
-   error(count) = r(count) - estimate(count);
-   u(1, count) = Kp * atan2(sin(error(count)),cos(error(count)))*0.1;
-   %max steering angle
-   if u(1,count) > max_s_angle
-       u(1,count) = max_s_angle;
-   elseif u(1,count) < -max_s_angle
-       u(1,count) = -max_s_angle;
-   end  
-
-   u(2,count) = u(1,count);
-   
-   %% update
-   
-    [mu, sig] = updatef4(x(1,count), sig, y(1,count), measurement_sig1, y(2,count), measurement_sig2, y(3,count), measurement_sig3);
-    x(1,count-1)=mu;
-    
-    %calculate the new value of x and y
-    x_pos = x_pos + move_step*cos(theta+u(1,count));
-    y_pos = y_pos + move_step*sin(theta+u(1,count));
-    x_att = x_att + move_step*cos(theta_tot+u(1,count));
-    y_att = y_att + move_step*sin(theta_tot+u(1,count));
-    
-    %plot the result:
-    subplot(2,1,1);
-    plot(x_0,y_0,'o');
-    axis([0 200 0 200]);
-    hold on;
-    plot(goal_point(1,1),goal_point(2,1),'p');
-    plot(goal_point(1,2),goal_point(2,2),'s');
-    plot(goal_point(1,3),goal_point(2,3),'d');
-    legend('start point','goal point1','goal point2','goal point3');
-    plot(path(1,1:step),path(2,1:step),'r');
-    plot(path_att(1,1:step),path_att(2,1:step),'g');
-
-    title({['x=',num2str(x_pos),'y=',num2str(y_pos)];...
-        ['steering angle=',num2str(u(1,count)*180/pi),'speed=',num2str(v)]});
-    fill([robot_pose(1,:)],[robot_pose(2,:)],'r');
-    fill([robot_pose_att(1,:)],[robot_pose_att(2,:)],'g');
-    hold off;
-    pause(0.1);
-end 
