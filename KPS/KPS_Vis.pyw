@@ -75,6 +75,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xlsxwriter
 from tkinter import TclError
+import csv
 
 if any(x == R or x == ORIENTATION for x in plots):
     from mpl_toolkits.mplot3d import Axes3D
@@ -309,6 +310,52 @@ try:
                         h_plots[i].autoscale_view(True, True, False)
                 plt.show()
                 ##GET DATA FROM PLOT HERE
+                for j in range(num_plots):
+                    i = plots[j]
+                    if i == Q:
+                        axis = plt.gca()
+                        title = axis.get_title()
+                        #line = axis.lines[0]
+                        #print("Y data: " + line.get_ydata())
+
+                        #h_lines[i][k].set_data(data[0], data[i][k::elems[i]])
+
+                        file = open("Xvalues.txt", "w")
+                        file.write(str(data[0]))
+                        file.close()
+
+                        file = open("Q1.txt", "w")
+                        file.write(str(data[i][0::4]))
+                        file.close()
+
+                        file = open("Q2.txt", "w")
+                        file.write(str(data[i][1::4]))
+                        file.close()
+
+                        file = open("Q3.txt", "w")
+                        file.write(str(data[i][2::4]))
+                        file.close()
+
+                        file = open("Q4.txt", "w")
+                        file.write(str(data[i][3::4]))
+                        file.close()
+
+
+                        myData = [data[0],data[i][0::4],data[i][1::4],data[i][2::4],data[i][3::4]]
+                        zip(*myData)
+
+
+                        myFile = open('kpsQdata.csv', 'w')
+                        with myFile:
+                            writer = csv.writer(myFile)
+                            writer.writerows(myData)
+
+
+
+
+
+
+
 
         else:
             ticks_without_change = 0

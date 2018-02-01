@@ -9,101 +9,144 @@ vec3 Controller::getControlTorque(const double t, const State& current_state) {
 
 	// example of a completely arbitrary control sequence
 
-	if (t < 60*10) {
+	if (t < 60*3) {
 		// minutes 1 to 10, controller off
-		return vec3{ 0.0, 0.0, 0.0 };
-	}
-	else if (t < 60*30) {
-		// minutes 11 to 20, steer the satellite to a desired orientation
-		quat desired_q{ 0.525, { 0.592, 0.158, 0.592 } };
-
-		vec3 desired_w{ 0.0, 0.0, 0.0 };
-
-		return proportionalFeedback(t, current_state, desired_q, desired_w);
-	}
-	else if (t < 60 * 30.5) {
-		// minutes 11 to 20, steer the satellite to a desired orientation
-		return vec3{ 0.0, 0.0, 0.0001 };
-	}
-	
-	/*
-	else if (t < 60 * 31) { 
-		return vec3{ 0.0, 0.00, 0.0001 };
-	}
-	else if (t < 60 * 32) {
-		return vec3{ 0.0, 0.00, -0.0001 };
-	}
-	*/
-	else {
 		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
 
 		vec3 desired_w{ 0.0, 0.0, 0.0 };
 
 		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	/*else if (t < 60 * 34) {
-		return vec3{ 0.0, 0.0, 0.0002 };
+	else if (t < 60*5) {
+		// minutes 11 to 20, steer the satellite to a desired orientation
+		return vec3{ 0.0, 0.0, 0.0 };
 	}
-	else if (t < 60 * 36) {
-		return vec3{ 0.0, 0.0, 0.0003 };
+	else if (t < 60 * 10) {
+		// minutes 11 to 20, steer the satellite to a desired orientation
+		return vec3{ 0.0, 0.0, 0.00006 };
+	} 
+	else if (t < 60 * 13) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
+
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	else if (t < 60 * 38) {
-		return vec3{ 0.0, 0.0, 0.0004 };
+	else if (t < 60 * 15) {
+		return vec3{ 0.0, 0.0, 0.0 };
 	}
-	else if (t < 60 * 40) {
-		return vec3{ 0.0, 0.0, 0.0005 };
+	else if (t < 60 * 20) {
+		return vec3{ 0.0, 0.0, 0.00007 };
 	}
-	else if (t < 60 * 42) {
-		return vec3{ 0.0, 0.0, 0.0006 };
+	else if (t < 60 * 23) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
+
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	else if (t < 60 * 44) {
-		return vec3{ 0.0, 0.0, 0.0007 };
+	else if (t < 60 * 25) {
+		return vec3{ 0.0, 0.0, 0.0 };
 	}
-	else if (t < 60 * 46) {
-		return vec3{ 0.0, 0.0, 0.0008 };
+	else  if (t< 60*30) {
+		return vec3{ 0.0, 0.0, 0.00008 };
 	}
-	else if (t < 60 * 48) {
-		return vec3{ 0.0, 0.0, 0.0009 };
+	else if (t < 60 * 33) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
+
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	*/
-	
+	else if (t < 60 * 35) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  if (t< 60 * 40) {
+		return vec3{ 0.0, 0.0, 0.00009 };
+	}
+	else if (t < 60 * 43) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
+
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
+	}
+	else if (t < 60 * 45) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  {
+		return vec3{ 0.0, 0.0, 0.0001 };
+	}
 
 	/*
-	else if (t < 60*40) {
-		// minutes 31 to 40, steer the satellite to another desired orientation
-		quat desired_q{ -0.618, { 0.586, -0.395, 0.343 } };
+	else if (t < 60 * 53) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
 
 		vec3 desired_w{ 0.0, 0.0, 0.0 };
 
 		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	else if (t < 60*50) {
-		// minutes 41 to 50, steer the satellite to a desired rotational direction and angular velocity
-		double omega = 0.1;
-
-		double theta = omega * t;
-
-		quat desired_q{ std::cos(theta/2), { std::sin(theta/2), 0.0, 0.0 } };
-
-		vec3 desired_w{ omega, 0.0, 0.0 };
-
-		return proportionalFeedback(t, current_state, desired_q, desired_w);
+	else if (t < 60 * 55) {
+		return vec3{ 0.0, 0.0, 0.0 };
 	}
-	else if (t < 60*60) {
-		// minutes 51 to 60, steer the satellite to another desired orientation
-		quat desired_q{ -0.895,{ -0.213, -0.129, 0.370 } };
+	else  if (t< 60 * 60) {
+		return vec3{ 0.0, 0.0, 0.00006 };
+	}
+	else if (t < 60 * 63) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
 
 		vec3 desired_w{ 0.0, 0.0, 0.0 };
 
 		return proportionalFeedback(t, current_state, desired_q, desired_w);
 	}
-	
-	// remainder of time, controller off
+	else if (t < 60 * 65) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  if (t< 60 * 70) {
+		return vec3{ 0.0, 0.0, 0.00007 };
+	}
+	else if (t < 60 * 73) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
 
-	return vec3{ 0.0, 0.0, 0.0 };
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
 
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
+	}
+	else if (t < 60 * 75) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  if (t< 60 * 80) {
+		return vec3{ 0.0, 0.0, 0.00008 };
+	}
+	else if (t < 60 * 83) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
 
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
+	}
+	else if (t < 60 * 85) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  if (t< 60 * 90) {
+		return vec3{ 0.0, 0.0, 0.00009 };
+	}
+	else if (t < 60 * 93) {
+		quat desired_q{ 0.525,{ 0.592, 0.158, 0.592 } };
+
+		vec3 desired_w{ 0.0, 0.0, 0.0 };
+
+		return proportionalFeedback(t, current_state, desired_q, desired_w);
+	}
+	else if (t < 60 * 95) {
+		return vec3{ 0.0, 0.0, 0.0 };
+	}
+	else  {
+		return vec3{ 0.0, 0.0, 0.0001 };
+	}
 	*/
+
+	
 }
 
 
