@@ -32,8 +32,8 @@ counter2ok=0;
 counter3ok=0;
 %% PI parameters 
 Kp=5; %increase until oscillations appear 
-Ki=0.15;  %increase to reduce error
-Kd=0.1; %increase to reduce oscillations
+Ki=0.2;  %increase to reduce error
+Kd=0; %inc
 count2=0;
 %% KF parameters
 sig = 0.02; %Prior Variance
