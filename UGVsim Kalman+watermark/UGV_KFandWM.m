@@ -77,7 +77,6 @@ attack=1; %attack bias value
 
 %% Begin Simulation
 for i=0:Ts:4
-    i
    count=count+1;
    step = step+1;
    %count2= count2+1;
@@ -116,7 +115,8 @@ for i=0:Ts:4
 
    end
    sig = sig + sig_u; %not sure what this is for
-   theta_tot = (y(1,count)+y(2,count)+y(3,count))/3; % average w/ attacked measurement to get angle robot actually is at
+   x(1,count)
+   theta_tot = (y(1,count)+y(2,count)+y(3,count))/3 % average w/ attacked measurement to get angle robot actually is at
 
     %% shield
 if shield==1    
@@ -194,14 +194,14 @@ end
  % end
  % u(2,count) = u(1,count);
 
-   v = Kv*sqrt((goal_point(1,j)-x_att)^2+(goal_point(2,j)-y_att)^2); % control speed as a function of distance from goal
+   v = Kv*sqrt((goal_point(1,1)-x_att)^2+(goal_point(2,1)-y_att)^2); % control speed as a function of distance from goal
    
-   if sqrt((goal_point(1,j)-x_att)^2+(goal_point(2,j)-y_att)^2) < 2 % if reached goal, set speed to 0
+   if sqrt((goal_point(1,1)-x_att)^2+(goal_point(2,1)-y_att)^2) < 2 % if reached goal, set speed to 0
        v = 0;
    end
 
    move_step = v * Ts;
-   r(count) = atan2(goal_point(2,j)-y_att,goal_point(1,j)-x_att); % desired angle
+   r(count) = atan2(goal_point(2,1)-y_att,goal_point(1,1)-x_att); % desired angle
    error(count) = atan2(sin(r(count) - estimate(count)),cos(r(count) - estimate(count)));
    %error(count) = r(count) - estimate(count); % error in angle
    integral(count) = integral(count-1) + error(count)*Ts;

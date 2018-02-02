@@ -23,9 +23,6 @@ y(:,1) = zeros(3,1);
 % u(:,1) = zeros(4,1);
 % y(:,1) = zeros(4,1);
 
-% goal point
-goal_point(:,1) = [round(180) round(20)]';
-
 count=1;
 counter1a=0;
 counter2a=0;
@@ -34,10 +31,9 @@ counter1ok=0;
 counter2ok=0;
 counter3ok=0;
 %% PI parameters 
-Kp=1; 
-Ki=0;  
+Kp=11; 
+Ki=0.2;  
 Kd=0;
-Kv=1;
 count2=0;
 %% KF parameters
 sig = 1; %Prior Variance
@@ -54,15 +50,17 @@ d3=0;
 rv(1)=0.2*randn;
 k=1;
 integral(1) = 0; 
-mu = 0;
+mu = 0; %initial prior
 eta = 10; % parameters to speed up convergence, i.e., remove attack faster and make covariance grow faster
 %% ATTACK VALUE
 attack=3; %attack bias value
 
 %% Begin Simulation
-for i=0:Ts:4
+
+for i=0:Ts:100
     count=count+1;
    count2= count2+1;
+   
     %% predict
    x(:,count)=A*x(:,count-1) + B*u(:,count-1);
    y(:,count)=C*x(:,count-1);
@@ -155,32 +153,32 @@ if shield==1
 end
 
    estimate(count) = x(1,count);%mu;
+   x(1,count)
   
-  %% Cruise Control using PI controller
-  % mantain speed v=10
-%  r(count)= 10;
+   %% Cruise Control using PI controller
+   % mantain speed v=4 before 50 iterations
+   if i<50
+      r(count)= 4;
 
- % error(count) = r(count) - estimate(count);
-  %integral(count) = integral(count-1) + error(count)*Ts;
-  %u(1, count) = Kp*error(count) + Ki*integral(count); 
-  %if u(1,count)>36;
-   %   u(1,count)=36;
- % end
- % u(2,count) = u(1,count);
-
-   v = Kv*sqrt((goal_point(1,j)-x_att)^2+(goal_point(2,j)-y_att)^2); % control speed as a function of distance from goal
-   
-   if sqrt((goal_point(1,j)-x_att)^2+(goal_point(2,j)-y_att)^2) < 2 % if reached goal, set speed to 0
-       v = 0;
-   end
-
-   move_step = v * Ts;
-   r(count) = atan2(goal_point(2,j)-y_att,goal_point(1,j)-x_att); % desired angle
-   error(count) = atan2(sin(r(count) - estimate(count)),cos(r(count) - estimate(count)));
-   %error(count) = r(count) - estimate(count); % error in angle
-   integral(count) = integral(count-1) + error(count)*Ts;
-   derivative(count) = (error(count) - error(count-1))/Ts;
-   u(1, count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
+  error(count) = r(count) - estimate(count);
+  integral(count) = integral(count-1) + error(count)*Ts;
+  u(1,count) = Kp*error(count) + Ki*integral(count);
+  if u(1,count)>36;
+      u(1,count)=36;
+  end
+  u(2,count) = u(1,count);
+  % mantain speed v=10 above 50 iterations
+   else
+      r(count)= 10;
+  
+  error(count) = r(count) - estimate(count);
+  integral(count) = integral(count-1) + error(count)*Ts;
+  u(1, count) = Kp*error(count) + Ki*integral(count); 
+  if u(1,count)>36;
+      u(1,count)=36;
+  end
+  u(2,count) = u(1,count);
+  end
   
   
    %% update
