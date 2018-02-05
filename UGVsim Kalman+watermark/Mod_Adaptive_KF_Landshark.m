@@ -15,7 +15,7 @@ clear u
 clear y
 close all
 x(:,1) = zeros(n,1);
-u(:,1) = zeros(2,1);
+u(:,1) = zeros(1,1);
 y(:,1) = zeros(3,1);
 % u(:,1) = [0;1];
  
@@ -154,7 +154,7 @@ if shield==1
 end
 
    estimate(count) = x(1,count);%mu;
-   x(1,count)
+   x(1,count);
   
    %% Cruise Control using PI controller 
    % mantain angle of pi/3 before 50 iterations
@@ -168,7 +168,7 @@ end
   if u(1,count)>pi;
       u(1,count)=pi;
   end
-  u(2,count) = u(1,count);
+
   % mantain angle pi/6 above 50 iterations
    else
       r(count)= pi/6;
@@ -180,7 +180,7 @@ end
   if u(1,count)>pi;
       u(1,count)=pi;
   end
-  u(2,count) = u(1,count);
+
   end
   
   
