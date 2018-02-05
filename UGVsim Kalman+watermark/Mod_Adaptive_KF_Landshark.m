@@ -31,9 +31,9 @@ counter1ok=0;
 counter2ok=0;
 counter3ok=0;
 %% PI parameters 
-Kp=5; %increase until oscillations appear 
-Ki=0.15;  %increase to reduce error
-Kd=0.1; %increase to reduce oscillations
+Kp=0; %increase until oscillations appear 
+Ki=0;  %increase to reduce error
+Kd=0; %increase to reduce oscillations
 count2=0;
 %% KF parameters
 sig = 0.02; %Prior Variance
@@ -168,6 +168,7 @@ end
   if u(1,count)>pi;
       u(1,count)=pi;
   end
+  
 
   % mantain angle pi/6 above 50 iterations
    else

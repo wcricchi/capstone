@@ -1,4 +1,4 @@
-Chanclear all
+clear all
 close all
 clc
 
@@ -26,8 +26,8 @@ Kt = 1.5;           % 10^(-3);       % m / N             Compliance of the track
 
 
 Ts = 0.005;%0.005; %0.01
-K1 = 0.1;
-K2 = .01;
+K1 = 1;
+K2 = 1;
   
 % non-turning
 % % % sys_v = ss(-Br/m_t,2/m_t,1,0);
@@ -54,7 +54,7 @@ K2 = .01;
 
 Ac = [1 K1* Ts; 
       0 1]; 
-Bc = [0 ; K2* 1];
+Bc = [0 ; K2* Ts];
 Cc = [0 1];
 
 %%%%%% For a 4x4 dummy system.  Need to look into quaternions more
