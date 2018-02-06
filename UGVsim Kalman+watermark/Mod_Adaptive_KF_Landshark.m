@@ -8,7 +8,7 @@
 % You can change the attack value to any value, see line 50
 %
 %% SHIELD
-shield=1; % 1 ENABLED; 0 DISABLED
+shield=0; % 1 ENABLED; 0 DISABLED
 
 clear x
 clear u
@@ -65,12 +65,12 @@ for i=0:Ts:100
     %% predict
    x(:,count)=A*x(:,count-1) + B*u(:,count-1);
    y(:,count)=C*x(:,count-1);
-   if count2 ==10
-       k=k+1;
-   rv(k)=0.01*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
-   
-   count2=0;
-   end
+%    if count2 ==10
+%        k=k+1;
+%    rv(k)=0.01*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
+%    
+%    count2=0;
+%    end
    y(1,count)=y(1,count)+rv(k);
       y(2,count)=y(2,count)+rv(k);
          y(3,count)=y(3,count)+rv(k);
@@ -80,16 +80,16 @@ for i=0:Ts:100
 %       klkl 
 %    end
 %% Constant attack inserted at following intervals
-   if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
-
-      
-       y(3,count)=y(3,count)+attack;
-       %y(1,count)=y(1,count)+attack;
-       %y(2,count)=y(2,count)+attack;
-       
-   end
-   sig = sig + sig_u;
-   
+%    if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
+% 
+%       
+%        y(3,count)=y(3,count)+attack;
+%        %y(1,count)=y(1,count)+attack;
+%        %y(2,count)=y(2,count)+attack;
+%        
+%    end
+%    sig = sig + sig_u;
+%    
     %% shield
 if shield==1    
     if (abs(y(1,count)-mu)/measurement_sig1)>1
@@ -219,21 +219,21 @@ end
   
 end
 
-figure(1)
-plot(u(1,:), 'r')
-title('INPUT')
-xlabel('time')
-ylabel('input value')
+% figure(1)
+% plot(u(1,:), 'r')
+% title('INPUT')
+% xlabel('time')
+% ylabel('input value')
 
-figure(2)
-hold on 
-plot(y(1,:),'r-')
-plot(y(2,:),'m-')
-plot(y(3,:),'b-')
-title('ANGLE MEASUREMENTS')
-xlabel('time')
-ylabel('ANGLE measurements value')
-legend('meas_1','meas_2','meas_3')
+% figure(2)
+% hold on 
+% plot(y(1,:),'r-')
+% plot(y(2,:),'m-')
+% plot(y(3,:),'b-')
+% title('ANGLE MEASUREMENTS')
+% xlabel('time')
+% ylabel('ANGLE measurements value')
+% legend('meas_1','meas_2','meas_3')
 
 figure(3)
 hold on
@@ -250,4 +250,3 @@ hold off
 % 
 % figure(55)
 % plot(rv, 'r-')
-
