@@ -7,7 +7,8 @@ clear all
 % labels at the top.  Its reccomended you make a new file for this matlab
 % code and keep wills raw data for reference.
 
-filename = 'z-point00001-5DATA.csv';
+%filename = 'z-point00001-5DATA-mod.csv';
+filename = 'z-point00006-0001DATA-mod.csv';
 M = csvread(filename);
 
 
