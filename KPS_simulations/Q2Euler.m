@@ -8,6 +8,7 @@ clear all
 % code and keep wills raw data for reference.
 
 %filename = 'z-point00001-5DATA-mod.csv';
+%the quaternion values are the exact same in either file
 filename = 'z-point00006-0001DATA-mod.csv';
 M = csvread(filename);
 
@@ -20,11 +21,31 @@ q1 = M(139:148,3);
 q2 = M(139:148,4);
 q3 = M(139:148,5);
 
-% time = M(327:429,1);
-% q0 = M(327:429,2);
-% q1 = M(327:429,3);
-% q2 = M(327:429,4);
-% q3 = M(327:429,5);
+% time = M(347:358,1);
+% q0 = M(347:358,1);
+% q1 = M(347:358,1);
+% q2 = M(347:358,1);
+% q3 = M(347:358,1);
+
+% time = M(570:582,1);
+% q0 = M(570:582,1);
+% q1 = M(570:582,1);
+% q2 = M(570:582,1);
+% q3 = M(570:582,1);
+
+% time = M(816:827,1);
+% q0 = M(816:827,1);
+% q1 = M(816:827,1);
+% q2 = M(816:827,1);
+% q3 = M(816:827,1);
+
+% time = M(1136:1147,1);
+% q0 = M(1136:1147,1);
+% q1 = M(1136:1147,1);
+% q2 = M(1136:1147,1);
+% q3 = M(1136:1147,1);
+
+
 
 quat = [ q0 q1 q2 q3 ];
 %roll = x-axis rotation
