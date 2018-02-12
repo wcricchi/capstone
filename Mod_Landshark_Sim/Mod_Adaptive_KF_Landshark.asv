@@ -77,12 +77,15 @@ for i=0:Ts:100
              y(3,count)=y(3,count)+rv(k)+wm;   
       checkwm = 1;
       count2=0;
+   
    else
        y(1,count)=y(1,count)+rv(k);
           y(2,count)=y(2,count)+rv(k);
              y(3,count)=y(3,count)+rv(k);   
    end
    
+
+
 
 %    if(x(:,count)>5)
 %       klkl 
@@ -162,7 +165,8 @@ if shield==1
 end
 
 if checkwm==1    
-   %%do something to check for watermark presence, then if not satisfied, set weight to zero    
+   %%do something to check for watermark pr, then if not satisfied, set weight to zero
+    
 end
 
    estimate(count) = x(1,count);%mu;
