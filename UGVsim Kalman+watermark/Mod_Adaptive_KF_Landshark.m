@@ -80,16 +80,16 @@ for i=0:Ts:100
 %       klkl 
 %    end
 %% Constant attack inserted at following intervals
-%    if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
-% 
-%       
-%        y(3,count)=y(3,count)+attack;
-%        %y(1,count)=y(1,count)+attack;
-%        %y(2,count)=y(2,count)+attack;
-%        
-%    end
-%    sig = sig + sig_u;
-%    
+    if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
+ 
+       
+        y(3,count)=y(3,count)+attack;
+        %y(1,count)=y(1,count)+attack;
+        %y(2,count)=y(2,count)+attack;
+        
+    end
+    sig = sig + sig_u;
+    
     %% shield
 if shield==1    
     if (abs(y(1,count)-mu)/measurement_sig1)>1
@@ -161,7 +161,8 @@ end
    if i<50
       r(count)= pi/3;
 
-  error(count) = atan2(sin(r(count) - estimate(count)),cos(r(count) - estimate(count)));
+  e = r(count) - estimate(count);
+  error(count) = atan2(sin(e),cos(e));
   integral(count) = integral(count-1) + error(count)*Ts;
   derivative(count) = (error(count) - error(count-1))/Ts;
   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
@@ -174,7 +175,8 @@ end
    else
       r(count)= pi/6;
   
-  error(count) = atan2(sin(r(count) - estimate(count)),cos(r(count) - estimate(count)));
+  e = r(count) - estimate(count);
+  error(count) = atan2(sin(e),cos(e));
   integral(count) = integral(count-1) + error(count)*Ts;
   derivative(count) = (error(count) - error(count-1))/Ts;
   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
@@ -219,21 +221,21 @@ end
   
 end
 
-% figure(1)
-% plot(u(1,:), 'r')
-% title('INPUT')
-% xlabel('time')
-% ylabel('input value')
+ figure(1)
+ plot(u(1,:), 'r')
+ title('INPUT')
+ xlabel('time')
+ ylabel('input value')
 
-% figure(2)
-% hold on 
-% plot(y(1,:),'r-')
-% plot(y(2,:),'m-')
-% plot(y(3,:),'b-')
-% title('ANGLE MEASUREMENTS')
-% xlabel('time')
-% ylabel('ANGLE measurements value')
-% legend('meas_1','meas_2','meas_3')
+ figure(2)
+ hold on 
+ plot(y(1,:),'r-')
+ plot(y(2,:),'m-')
+ plot(y(3,:),'b-')
+ title('ANGLE MEASUREMENTS')
+ xlabel('time')
+ ylabel('ANGLE measurements value')
+ legend('meas_1','meas_2','meas_3')
 
 figure(3)
 hold on
@@ -244,6 +246,10 @@ xlabel('time')
 ylabel('angle')
 legend('estimate','reference')
 hold off
+
+figure(4)
+hold on
+plot(estimate)
 
 % figure(44)
 % plot (abs(x(1,:)-r), 'k-')

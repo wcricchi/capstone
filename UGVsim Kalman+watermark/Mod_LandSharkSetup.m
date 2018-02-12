@@ -26,7 +26,7 @@ Kt = 1.5;           % 10^(-3);       % m / N             Compliance of the track
 
 
 Ts = 0.005;%0.005; %0.01
-K1 = -100;
+K1 = 1;
 K2 = 1;
   
 % non-turning
