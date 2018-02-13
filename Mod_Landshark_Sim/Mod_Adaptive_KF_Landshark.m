@@ -48,8 +48,8 @@ measurement_sig30 = measurement_sig3;
 d1=0;
 d2=0;
 d3=0;
-rv(1)=0.01*randn;
-k=1;
+%rv(1)=0.01*randn;
+%k=1;
 integral(1) = 0; 
 derivative(1) = 0;
 mu = 0; %initial prior
@@ -67,20 +67,20 @@ for i=0:Ts:100
    x(:,count)=A*x(:,count-1) + B*u(:,count-1);
    y(:,count)=C*x(:,count-1);
    
-   rv(k)=0.01*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
+   rv=0.01*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
    
    if count2 ==10 %insert watermark every 10 counts
-      k=k+1;
+     % k=k+1;
       wm=0.01*randn; 
-       y(1,count)=y(1,count)+rv(k)+wm;
-          y(2,count)=y(2,count)+rv(k)+wm;
-             y(3,count)=y(3,count)+rv(k)+wm;   
+       y(1,count)=y(1,count)+rv+wm;
+          y(2,count)=y(2,count)+rv+wm;
+             y(3,count)=y(3,count)+rv+wm;   
       checkwm = 1;
       count2=0;
    else
-       y(1,count)=y(1,count)+rv(k);
-          y(2,count)=y(2,count)+rv(k);
-             y(3,count)=y(3,count)+rv(k);   
+       y(1,count)=y(1,count)+rv;
+          y(2,count)=y(2,count)+rv;
+             y(3,count)=y(3,count)+rv;   
    end
    
 
@@ -162,7 +162,28 @@ if shield==1
 end
 
 if checkwm==1    
-   %%do something to check for watermark presence, then if not satisfied, set weight to zero    
+   %%do something to check for watermark presence, then if not satisfied, set weight to zero   
+   %check magnitude of difference from last value
+    if (y(1,count)-y(1,count-1)) > (rv+wm)       
+        measurement_sig1 = measurement_sig1 + 10;   
+    else
+        measurement_sig1 = measurement_sig1;      
+    end
+    
+    if (y(2,count)-y(2,count-1)) > (rv+wm)       
+        measurement_sig2 = measurement_sig2 + 10;   
+    else
+        measurement_sig2 = measurement_sig2;      
+    end
+ 
+    if (y(3,count)-y(3,count-1)) > (rv+wm)       
+        measurement_sig3 = measurement_sig3 + 10;   
+    else
+        measurement_sig3 = measurement_sig3;      
+    end
+    
+    checkwm = 0; %set flag back to 0
+   
 end
 
    estimate(count) = x(1,count);%mu;
@@ -251,16 +272,12 @@ end
 figure(3)
 hold on
 plot(x(1,:), 'b-')
-plot(r, 'r-')
-title('ESTIMATE VS REFERENCE')
+%plot(r, 'r-')
+title('ESTIMATE')
 xlabel('time')
 ylabel('angle')
-legend('estimate','reference')
+legend('estimate')
 hold off
-
-figure(4)
-hold on
-plot(u(1,:))
 
 %figure(5)
 %plot (abs(x(1,:)-r), 'k-')
