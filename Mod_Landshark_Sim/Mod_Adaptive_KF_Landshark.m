@@ -67,15 +67,14 @@ for i=0:Ts:100
    x(:,count)=A*x(:,count-1) + B*u(:,count-1);
    y(:,count)=C*x(:,count-1);
    
-   rv=0.01*randn; % remember to change this to match the other file % NOISE LEVEL FOR EACH SENSOR
+   rv=0.01*randn; % NOISE LEVEL FOR EACH SENSOR
    
-   if count2 ==10 %insert watermark every 10 counts
-     % k=k+1;
+   if count2 ==10                %insert watermark every 10 counts
       wm=0.01*randn; 
        y(1,count)=y(1,count)+rv+wm;
           y(2,count)=y(2,count)+rv+wm;
              y(3,count)=y(3,count)+rv+wm;   
-      checkwm = 1;
+      checkwm = 1;               % flag sim to check if watermakr is indeed present
       count2=0;
    else
        y(1,count)=y(1,count)+rv;
@@ -89,8 +88,7 @@ for i=0:Ts:100
 %    end
 %% Constant attack inserted at following intervals
     if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
- 
-       
+  
         y(3,count)=y(3,count)+attack;
         %y(1,count)=y(1,count)+attack;
         %y(2,count)=y(2,count)+attack;
@@ -161,6 +159,7 @@ if shield==1
     
 end
 
+    %% ceck watermark value
 if checkwm==1    
    %%do something to check for watermark presence, then if not satisfied, set weight to zero   
    %check magnitude of difference from last value
@@ -187,36 +186,42 @@ if checkwm==1
 end
 
    estimate(count) = x(1,count);%mu;
-  
+   
+   if (i>50 && i<70) 
+       u(1,count) = 0.01;
+   else
+       u(1,count) = 0;
+   end
+   
    %% Cruise Control using PI controller 
    % mantain angle of pi/3 before 50 iterations
-   if i<50
-      r(count)= pi/3;
-
-  e = r(count) - estimate(count);
-  error(count) = atan2(sin(e),cos(e));
-  integral(count) = integral(count-1) + error(count)*Ts;
-  derivative(count) = (error(count) - error(count-1))/Ts;
-  u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
-  if u(1,count)>pi;
-      u(1,count)=pi;
-  end
-  
-
-  % mantain angle pi/6 above 50 iterations
-   else
-      r(count)= pi/6;
-  
-  e = r(count) - estimate(count);
-  error(count) = atan2(sin(e),cos(e));
-  integral(count) = integral(count-1) + error(count)*Ts;
-  derivative(count) = (error(count) - error(count-1))/Ts;
-  u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
-  if u(1,count)>pi;
-      u(1,count)=pi;
-  end
-
-  end
+%    if i<50
+%       r(count)= pi/3;
+% 
+%   e = r(count) - estimate(count);
+%   error(count) = atan2(sin(e),cos(e));
+%   integral(count) = integral(count-1) + error(count)*Ts;
+%   derivative(count) = (error(count) - error(count-1))/Ts;
+%   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
+%   if u(1,count)>pi;
+%       u(1,count)=pi;
+%   end
+%   
+% 
+%   % mantain angle pi/6 above 50 iterations
+%    else
+%       r(count)= pi/6;
+%   
+%   e = r(count) - estimate(count);
+%   error(count) = atan2(sin(e),cos(e));
+%   integral(count) = integral(count-1) + error(count)*Ts;
+%   derivative(count) = (error(count) - error(count-1))/Ts;
+%   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
+%   if u(1,count)>pi;
+%       u(1,count)=pi;
+%   end
+% 
+%   end
   
   
    %% update
@@ -224,18 +229,18 @@ end
     [mu, sig] = updatef4(x(1,count), sig, y(1,count), measurement_sig1, y(2,count), measurement_sig2, y(3,count), measurement_sig3);
     x(1,count-1)=mu;
     
-    if i==25
-        y(1,count)
-        y(2,count)
-        y(3,count)
-        x(1,count)
-        mu
-        sig
-        measurement_sig1
-        measurement_sig2
-        measurement_sig3
-    end
-%     
+%     if i==25
+%         y(1,count)
+%         y(2,count)
+%         y(3,count)
+%         x(1,count)
+%         mu
+%         sig
+%         measurement_sig1
+%         measurement_sig2
+%         measurement_sig3
+%     end
+% %     
 %     if i==51.81
 %         y(1,count)
 %         y(2,count)
