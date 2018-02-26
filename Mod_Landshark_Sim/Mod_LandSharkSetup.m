@@ -26,8 +26,8 @@ Kt = 1.5;           % 10^(-3);       % m / N             Compliance of the track
 
 
 Ts = 0.005;%0.005; %0.01
-K1 = 113;
-I = 0.03355;
+K1 = 2.2;
+I = 0.0943;
   
 % non-turning
 % % % sys_v = ss(-Br/m_t,2/m_t,1,0);
