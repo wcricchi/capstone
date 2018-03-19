@@ -8,7 +8,7 @@
 % You can change the attack value to any value, see line 50
 %
 %% SHIELD
-shield=0; % 1 ENABLED; 0 DISABLED
+shield=1; % 1 ENABLED; 0 DISABLED
 checkwm=0;
 
 clear x
@@ -32,7 +32,7 @@ counter1ok=0;
 counter2ok=0;
 counter3ok=0;
 %% PI parameters 
-Kp=0; %increase until oscillations appear 
+Kp=0.001; %increase until oscillations appear 
 Ki=0;  %increase to reduce error
 Kd=0; %increase to reduce oscillations
 count2=0;
@@ -63,167 +63,166 @@ for i=0:Ts:100
     count=count+1;
    count2= count2+1;
    
-    %% predict
-   x(:,count)=A*x(:,count-1) + B*u(:,count-1);
-   y(:,count)=C*x(:,count-1);
-   
-   rv=0.01*randn; % NOISE LEVEL FOR EACH SENSOR
-   
-   if count2 ==10                %insert watermark every 10 counts
-      wm=0.01*randn; 
-       y(1,count)=y(1,count)+rv+wm;
-          y(2,count)=y(2,count)+rv+wm;
-             y(3,count)=y(3,count)+rv+wm;   
-      checkwm = 1;               % flag sim to check if watermakr is indeed present
-      count2=0;
-   else
-       y(1,count)=y(1,count)+rv;
-          y(2,count)=y(2,count)+rv;
-             y(3,count)=y(3,count)+rv;   
-   end
-   
-
-%    if(x(:,count)>5)
-%       klkl 
+%     %% predict
+    x(:,count)=A*x(:,count-1) + B*u(1,count-1);
+    y(:,count)=C*x(:,count-1);
+%    
+%    rv=0.01*randn; % NOISE LEVEL FOR EACH SENSOR
+%    
+%    if count2 ==10                %insert watermark every 10 counts
+%       wm=0.01*randn; 
+%        y(1,count)=y(1,count)+rv+wm;
+%           y(2,count)=y(2,count)+rv+wm;
+%              y(3,count)=y(3,count)+rv+wm;   
+%       checkwm = 1;               % flag sim to check if watermakr is indeed present
+%       count2=0;
+%    else
+%        y(1,count)=y(1,count)+rv;
+%           y(2,count)=y(2,count)+rv;
+%              y(3,count)=y(3,count)+rv;   
 %    end
-%% Constant attack inserted at following intervals
-    if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
-  
-        y(3,count)=y(3,count)+attack;
-        %y(1,count)=y(1,count)+attack;
-        %y(2,count)=y(2,count)+attack;
-        
-    end
-    sig = sig + sig_u;
-    
-    %% shield
-if shield==1    
-    if (abs(y(1,count)-mu)/measurement_sig1)>1
-        
-        d1=d1+eta*(abs(y(1,count)-mu)/measurement_sig1 - 1);
-        measurement_sig1 = measurement_sig1 + d1;    
-        counter1a=counter1a+1;
-    else
-        
-        d1 = d1;
-        measurement_sig1 = measurement_sig1;
-        
-    end
-    
-    if (abs(y(1,count)-mu)/measurement_sig10) <= 1
-        
-        measurement_sig1 = measurement_sig10;
-        d1=0;
-        counter1ok=counter1ok+1;
-    end
-    
-    
-    if (abs(y(2,count)-mu)/measurement_sig2)>1
-        
-        d2=d2+eta*(abs(y(2,count)-mu)/measurement_sig2 - 1);
-        measurement_sig2 = measurement_sig2 + d2;    
-        counter2a=counter2a+1;
-    else
-        
-        d2 = d2;
-        measurement_sig2 = measurement_sig2;
-        
-    end
-    
-    if (abs(y(2,count)-mu)/measurement_sig20) <= 1
-        
-        measurement_sig2 = measurement_sig20;
-        d2=0;
-        counter2ok=counter2ok+1;
-    end
-    
-    
-    if (abs(y(3,count)-mu)/measurement_sig3)>1
-        
-        d3=d3+eta*(abs(y(3,count)-mu)/measurement_sig3 - 1);
-        measurement_sig3 = measurement_sig3 + d3;    
-        counter3a=counter3a+1;
-    else
-        
-        d3 = d3;
-        measurement_sig3 = measurement_sig3;
-        
-    end
-    
-    if (abs(y(3,count)-mu)/measurement_sig30) <= 1
-        
-        measurement_sig3 = measurement_sig30;
-        d3=0;
-        counter3ok=counter3ok+1;
-    end
-    
-end
-
-    %% ceck watermark value
-if checkwm==1    
-   %%do something to check for watermark presence, then if not satisfied, set weight to zero   
-   %check magnitude of difference from last value
-    if (y(1,count)-y(1,count-1)) > (rv+wm)       
-        measurement_sig1 = measurement_sig1 + 10;   
-    else
-        measurement_sig1 = measurement_sig1;      
-    end
-    
-    if (y(2,count)-y(2,count-1)) > (rv+wm)       
-        measurement_sig2 = measurement_sig2 + 10;   
-    else
-        measurement_sig2 = measurement_sig2;      
-    end
- 
-    if (y(3,count)-y(3,count-1)) > (rv+wm)       
-        measurement_sig3 = measurement_sig3 + 10;   
-    else
-        measurement_sig3 = measurement_sig3;      
-    end
-    
-    checkwm = 0; %set flag back to 0
-   
-end
-
-   estimate(count) = x(1,count);%mu;
-   
-   if (i>50 && i<70) 
-       u(1,count) = 0.01;
-   else
-       u(1,count) = 0;
-   end
+%    
+% 
+% %    if(x(:,count)>5)
+% %       klkl 
+% %    end
+% %% Constant attack inserted at following intervals
+%     if (i<10) || (i>=20 && i<30) || (i>=40 && i<50) || (i>=60 && i<70) || (i>=80 && i<90)
+%   
+%         y(3,count)=y(3,count)+attack;
+%         %y(1,count)=y(1,count)+attack;
+%         %y(2,count)=y(2,count)+attack;
+%         
+%     end
+%     sig = sig + sig_u;
+%     
+%     %% shield
+% if shield==1    
+%     if (abs(y(1,count)-mu)/measurement_sig1)>1
+%         
+%         d1=d1+eta*(abs(y(1,count)-mu)/measurement_sig1 - 1);
+%         measurement_sig1 = measurement_sig1 + d1;    
+%         counter1a=counter1a+1;
+%     else
+%         
+%         d1 = d1;
+%         measurement_sig1 = measurement_sig1;
+%         
+%     end
+%     
+%     if (abs(y(1,count)-mu)/measurement_sig10) <= 1
+%         
+%         measurement_sig1 = measurement_sig10;
+%         d2=0;
+%         counter1ok=counter1ok+1;
+%     end
+%     
+%     
+%     if (abs(y(2,count)-mu)/measurement_sig2)>1
+%         
+%         d2=d2+eta*(abs(y(2,count)-mu)/measurement_sig2 - 1);
+%         measurement_sig2 = measurement_sig2 + d2;    
+%         counter2a=counter2a+1;
+%     else
+%         
+%         d2 = d2;
+%         measurement_sig2 = measurement_sig2;
+%         
+%     end
+%     
+%     if (abs(y(2,count)-mu)/measurement_sig20) <= 1
+%         
+%         measurement_sig2 = measurement_sig20;
+%         d2=0;
+%         counter2ok=counter2ok+1;
+%     end
+%     
+%     
+%     if (abs(y(3,count)-mu)/measurement_sig3)>1
+%         
+%         d3=d3+eta*(abs(y(3,count)-mu)/measurement_sig3 - 1);
+%         measurement_sig3 = measurement_sig3 + d3;    
+%         counter3a=counter3a+1;
+%     else
+%         
+%         d3 = d3;
+%         measurement_sig3 = measurement_sig3;
+%         
+%     end
+%     
+%     if (abs(y(3,count)-mu)/measurement_sig30) <= 1
+%         
+%         measurement_sig3 = measurement_sig30;
+%         d3=0;
+%         counter3ok=counter3ok+1;
+%     end
+%     
+% end
+% 
+%     %% ceck watermark value
+% if checkwm==1    
+%    %%do something to check for watermark presence, then if not satisfied, set weight to zero   
+%    %check magnitude of difference from last value
+%     if (y(1,count)-y(1,count-1)) > (rv+wm)       
+%         measurement_sig1 = measurement_sig1 + 10;   
+%     else
+%         measurement_sig1 = measurement_sig1;      
+%     end
+%     
+%     if (y(2,count)-y(2,count-1)) > (rv+wm)       
+%         measurement_sig2 = measurement_sig2 + 10;   
+%     else
+%         measurement_sig2 = measurement_sig2;      
+%     end
+%  
+%     if (y(3,count)-y(3,count-1)) > (rv+wm)       
+%         measurement_sig3 = measurement_sig3 + 10;   
+%     else
+%         measurement_sig3 = measurement_sig3;      
+%     end
+%     
+%     checkwm = 0; %set flag back to 0
+%    
+% end
+% 
+    estimate(count) = x(1,count);%mu;
+%    
+%    if (i>50 && i<70) 
+%        u(1,count) = 0.01;
+%    else
+%        u(1,count) = 0;
+%    end
    
    %% Cruise Control using PI controller 
-   % mantain angle of pi/3 before 50 iterations
-%    if i<50
-%       r(count)= pi/3;
-% 
-%   e = r(count) - estimate(count);
-%   error(count) = atan2(sin(e),cos(e));
-%   integral(count) = integral(count-1) + error(count)*Ts;
-%   derivative(count) = (error(count) - error(count-1))/Ts;
-%   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
+   %mantain angle of pi/3 before 50 iterations
+   if i<100
+      r(count)= pi/12;
+
+  e = r(count) - estimate(count);
+  error(count) = atan2(sin(e),cos(e));
+  integral(count) = integral(count-1) + error(count)*Ts;
+  derivative(count) = (error(count) - error(count-1))/Ts;
+  u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
 %   if u(1,count)>pi;
 %       u(1,count)=pi;
 %   end
-%   
-% 
-%   % mantain angle pi/6 above 50 iterations
-%    else
-%       r(count)= pi/6;
-%   
-%   e = r(count) - estimate(count);
-%   error(count) = atan2(sin(e),cos(e));
-%   integral(count) = integral(count-1) + error(count)*Ts;
-%   derivative(count) = (error(count) - error(count-1))/Ts;
-%   u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
+  
+
+  % mantain angle pi/6 above 50 iterations
+   else
+      r(count)= pi/6;
+  
+  e = r(count) - estimate(count)
+  error(count) = atan2(sin(e),cos(e));
+  integral(count) = integral(count-1) + error(count)*Ts;
+  derivative(count) = (error(count) - error(count-1))/Ts;
+  u(1,count) = Kp*error(count) + Ki*integral(count) + Kd*derivative(count);
 %   if u(1,count)>pi;
 %       u(1,count)=pi;
 %   end
-% 
-%   end
-  
-  
+
+  end
+
    %% update
    
     [mu, sig] = updatef4(x(1,count), sig, y(1,count), measurement_sig1, y(2,count), measurement_sig2, y(3,count), measurement_sig3);

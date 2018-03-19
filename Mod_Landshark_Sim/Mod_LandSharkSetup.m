@@ -100,9 +100,9 @@ pulse_attack = 1*3; %ATTACK
 % global C
 % global A
 
-A = sys_vd.A;
-B = sys_vd.B;
-C = sys_vd.C;
+A = sys_vd.A
+B = sys_vd.B
+C = sys_vd.C
 
 % Anew = [A                           B*[1 1]';
 %         -1/3*[Kp_s Kp_s Kp_s]*C   Ki_s]
